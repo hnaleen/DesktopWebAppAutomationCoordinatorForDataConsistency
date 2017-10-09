@@ -1,0 +1,4 @@
+# DesktopAutomationRunner-HackedMarathon
+A Hacked Marathon module that enables running Marathon as a library (instead of as the Framework) in a bigger framework so that Test Cases can be executed in a controlled manner (running a give test script upon notification, with given test data in XML format, from a given test suite, through an API call).
+
+* Changes are done only in 'Marathon-master\marathon-core'. Therefore only 'marathon-core' is here in 'Marathon-master'. Rest of the marathon dependencies (ex: marathon-runtime, marathon-runtime-api, marathon-runtime-server, marathon-extensions, marathon-ruby, etc..) can be downloaded from marathon repo at https://github.com/jalian-systems/Marathon
