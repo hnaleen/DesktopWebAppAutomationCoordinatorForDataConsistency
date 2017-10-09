@@ -1,0 +1,159 @@
+package se.nova.jdbc;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
+
+import se.nova.Constants;
+import se.nova.dto.Diff;
+import se.nova.testcase.TestCase;
+
+public class ScriptRunner2
+{
+  public static void main(String[] args) throws IOException
+  {
+    ScriptRunner2 springMain = new ScriptRunner2();
+    springMain.createCustomizedEnvPropertiesForTestCase(null, "5412");
+
+    //    ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+    //    DataSource dataSource = ctx.getBean("dataSource", DataSource.class);
+    //    ScriptRunner springMain = new ScriptRunner();
+    //    springMain.getDiff(dataSource);
+    //    ctx.close();
+    //    System.out.println("DONE");
+  }
+
+  private void writeToFile(String customizedEnvProperties)
+  {
+    try
+    {
+      Files.write(Paths.get(Constants.dirPath + Constants.cutomizedProFileName), customizedEnvProperties.getBytes());
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  
+  private void createCustomizedEnvPropertiesForUser(String userId)
+  {
+    String envProperties = readTemplateEnvPropertiesFile(Constants.TEMPLATE_ENV_LATEST_RECORD);
+    String customizedEnvProperties = envProperties.replaceAll(Constants.DATA_CREATOR_PLACEHOLDER, userId);
+    writeToFile(customizedEnvProperties);
+  }
+
+  public void createCustomizedEnvPropertiesForTestCase(String userId, String cosmicPrimaryKey)
+  {
+    String envPropertiesTemplate = readTemplateEnvPropertiesFile(Constants.TEMPLATE_ENV_TESTCASE);
+    String customizedEnvProperties = envPropertiesTemplate.replaceAll(Constants.COSMIC_TREATMENT_ID_PLACEHOLDER,
+        cosmicPrimaryKey);
+    customizedEnvProperties = customizedEnvProperties.replaceAll(Constants.DATA_CREATOR_PLACEHOLDER, userId);
+    writeToFile(customizedEnvProperties);
+  }
+
+  private String readTemplateEnvPropertiesFile(String fileName)
+  {
+    StringBuilder builder = new StringBuilder();
+    try (BufferedReader br = new BufferedReader(new FileReader(Constants.dirPath + fileName)))
+    {
+      String sCurrentLine;
+      while ((sCurrentLine = br.readLine()) != null)
+      {
+        builder.append(sCurrentLine + "\n");
+      }
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+    return builder.toString();
+  }
+
+  private String getQueryFromScript() throws IOException
+  {
+    BufferedReader in = new BufferedReader(new FileReader(Constants.dirPath + Constants.scriptFileName));
+    LineNumberReader fileReader = new LineNumberReader(in);
+    return ScriptUtils.readScript(fileReader, "--", ";");
+  }
+
+  public Diff getDiffLatestRecordsOfUser(DataSource dataSource, String userId)
+  {
+    createCustomizedEnvPropertiesForUser(userId);
+    return getDiff(dataSource);
+  }
+
+  public Diff getDiffForTestCase(DataSource dataSource, TestCase testCase)
+  {
+    createCustomizedEnvPropertiesForTestCase(testCase.getUserId(), testCase.getCosmicPrimaryKey());
+    return getDiff(dataSource);
+  }
+
+  public Diff getDiff(DataSource dataSource)
+  {
+    final Diff diff = new Diff();
+    try
+    {
+      JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+      String query = getQueryFromScript();
+
+      jdbcTemplate.query(query, new RowMapper()
+      {
+        public Object mapRow(ResultSet resultSet, int rowNumber) throws SQLException
+        {
+          String tableName = resultSet.getString("TABLE_NAME");
+          String primaryKeyPair = resultSet.getString("PRIMARYKEY").split(">")[1];
+          String columnName = resultSet.getString("COLUMN_NAME");
+          String value = resultSet.getString("VALUES_MISMATCH");
+          diff.markAsDiff(tableName, primaryKeyPair, columnName, value);
+          return null;
+        }
+      });
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      diff.setContainsErrors(true);
+    }
+    return diff;
+  }
+
+  //  public Diff getDiff(DataSource dataSource, TestCase testCase)
+  //  {
+  //    final Diff diff = new Diff();
+  //    try
+  //    {
+  //      createCustomizedEnvPropertiesForUser(testCase.getUserId(), testCase.getCosmicPrimaryKey());
+  //      JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+  //      String query = getQueryFromScript();
+  //
+  //      jdbcTemplate.query(query, new RowMapper()
+  //      {
+  //        public Object mapRow(ResultSet resultSet, int rowNumber) throws SQLException
+  //        {
+  //          String tableName = resultSet.getString("TABLE_NAME");
+  //          String primaryKeyPair = resultSet.getString("PRIMARYKEY").split(">")[1];
+  //          String columnName = resultSet.getString("COLUMN_NAME");
+  //          String value = resultSet.getString("VALUES_MISMATCH");
+  //          diff.markAsDiff(tableName, primaryKeyPair, columnName, value);
+  //          return null;
+  //        }
+  //      });
+  //    }
+  //    catch (Exception e)
+  //    {
+  //      e.printStackTrace();
+  //    }
+  //    return diff;
+  //  }
+}

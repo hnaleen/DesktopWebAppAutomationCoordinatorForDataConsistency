@@ -1,0 +1,54 @@
+<div class="container">
+    <div class="row">
+        <div class="btn-group col-sm-12" uib-dropdown ng-if="tables">
+            <button id="split-button" type="button" class="btn btn-primary" ng-click="exportReport(tables)">
+                <i class="fa fa-file-excel-o"></i>
+                Export to Excel
+            </button>
+            <button type="button" class="btn btn-primary" uib-dropdown-toggle>
+                <span class="glyphicon glyphicon-cog"></span>
+                <span class="sr-only">Split button!</span>
+            </button>
+            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+                <li>
+                    <a href="#" class="small" data-value="option1" tabIndex="-1">
+                        <input type="checkbox" ng-model="promptForFileName"/>&nbsp;Prompt for File Name
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row top-buffer">
+        <div class="col-sm-12">
+            <uib-accordion close-others="false">
+                <div uib-accordion-group class="panel-primary" is-open="true" ng-repeat="table in tables">
+                    <uib-accordion-heading id="tab">
+                        {{table.name.split(".")[1]}} <i class="pull-right glyphicon"
+                                                        ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                    </uib-accordion-heading>
+                    <div ng-repeat="row in table.rowPairs">
+
+                        <table class="table table-bordered" id={{table.name.split(".")[1]+"Table"}}>
+
+                            <thead class="thead-inverse">
+                            <td class="col-md-4">Row # {{$index+1}} : ({{row.primaryKeyPair}})</td>
+                            <td class="col-md-4">Cosmic Value (PK: {{row.cosmicPrimaryKey}})</td>
+                            <td class="col-md-4">Nova Value (PK: {{row.novaPrimaryKey}})</td>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="column in row.columnValuesPair">
+                                <th scope="row">{{column.columnName}}</th>
+                                <td id="cosmicValue">{{getCosmicDisplayValue(column)}}</td>
+                                <td id="novaValue">{{getNovaDisplayValue(column)}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </uib-accordion>
+            <div class="alert alert-danger" ng-if="errorMsg">
+                <strong>Warning:</strong>{{errorMsg}}
+            </div>
+        </div>
+    </div>
+</div>

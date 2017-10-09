@@ -1,0 +1,15 @@
+<div ng-controller="testSuiteController">
+    <test-suite-result-selector test-results="addTestResultsFromSuite(diffByTestCaseId)"></test-suite-result-selector>
+
+    <br>
+    <div>
+        <h4 ng-if="getTestCaseIds().length">Test Cases ({{getTestCaseIds().length}})</h4>
+        <ul class="list-inline">
+            <li ng-repeat="testCaseId in getTestCaseIds() track by $index" ng-click="setCurrentTestCase(testCaseId)"><a>&bull; {{testCaseId}}</a></li>
+        </ul>
+    </div>
+
+    <br>
+    <h2 ng-if="currentTestCaseId">DB Comparison Results for Test Case : {{currentTestCaseId}}</h2>
+    <diff-view ng-if="currentTestCaseId" tables="diff"></diff-view>
+</div>

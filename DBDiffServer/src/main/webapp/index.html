@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Diffs</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="css/my.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+</head>
+<body ng-app="diffApp" ng-controller="diffController" class="container">
+<header class="jumbotron">
+    <h2 class="display-4 ">Nova-Med Write Api Diffs:</h2>
+    <hr class="my-4">
+    <form>
+        <div class="form-group row">
+            <label for="testCaseId" class="col-sm-3 col-form-label">Compare with Existing Test Case</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="testCaseId" placeholder="Test Case ID" ng-model="testCaseId"
+                       ng-disabled="dataLoadingInProgress">
+            </div>
+            <button type="button" class="btn btn-large btn-primary" ng-click="compareDiffTestCases()"
+                    ng-disabled="dataLoadingInProgress || isEmpty(testCaseId)">
+                <span ng-show="dataLoadingInProgress"><i class="glyphicon glyphicon-refresh spinning"></i></span>
+                {{getButtonText()}}
+            </button>
+
+        </div>
+        <div class="form-group row">
+            <label for="userId" class="col-sm-3 col-form-label">Compare Latest Records of User</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="userId" placeholder="User ID" ng-model="userId"
+                       ng-disabled="dataLoadingInProgress">
+            </div>
+            <button type="button" class="btn btn-large btn-primary" ng-click="compareDiffLatestRecords()"
+                    ng-disabled="dataLoadingInProgress || isEmpty(userId)">
+                <span ng-show="dataLoadingInProgress"><i class="glyphicon glyphicon-refresh spinning"></i></span>
+                {{getButtonText()}}
+            </button>
+        </div>
+    </form>
+</header>
+
+<hr class="my-4">
+<diff-view data-tables="tables" data-error-msg="errorMsg"></diff-view>
+
+</body>
+<script src="js/angular.js"></script>
+
+<script src="js/angular-animate.js"></script>
+<script src="js/ui-bootstrap-tpls-2.5.0.js"></script>
+<script src="js/nova/DiffController.js"></script>
+<script src="js/angular-file-saver.min.js"></script>
+<script src="js/angular-file-saver.bundle.min.js"></script>
+<script src="js/nova/FileExportService.js"></script>
+<!--<script src="js/nova/tmep/Temp.js"></script>-->
+<script src="js/nova/directive/diffView/DiffView.js"></script>
+</html>

@@ -1,0 +1,505 @@
+<!-- (c) Copyright Cambio Healthcare Systems AB, 2016.  All rights reserved. -->
+<!-- Project:Version -->
+<!-- Jira: -->
+<!-- Confluence:http://confluence.cambio.se/-->
+<!-- Status="Q" Execute SQL Query and Get the PRIMARYKEY, Status="V" Use Given Values   -->
+ 
+
+<Properties>
+	<TestCase DATA_CREATOR="COSMIC_NOVA_DATA_CREATOR">
+		<objects TABLE_SCHEMA="med" TABLE_NAME="MedicationTreatment" STATUS="Q">
+			<EXCLUDE_COLUMNS>id,patient</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>id</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(mt.id AS varchar(15)) FROM med.MedicationTreatment mt 
+							WHERE mt.id = @MedicationTreatment_id_cosmic
+							ORDER BY mt.id DESC
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(mt.id AS varchar(15)) FROM med.MedicationTreatment mt 
+							WHERE mt.id = @MedicationTreatment_id_nova
+							ORDER BY mt.id DESC]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+		<objects TABLE_SCHEMA="med" TABLE_NAME="MedicationTreatmentLog" STATUS="Q">
+			<EXCLUDE_COLUMNS>id,versioningInformation_createdDateTime,medicationTreatment,prescription</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>id</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(id AS varchar(15)) FROM med.MedicationTreatmentLog
+							WHERE medicationTreatment = @MedicationTreatment_id_cosmic
+							ORDER BY id DESC
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(id AS varchar(15)) FROM med.MedicationTreatmentLog
+							WHERE medicationTreatment = @MedicationTreatment_id_nova
+							ORDER BY id DESC]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+		<objects TABLE_SCHEMA="med" TABLE_NAME="Prescription" STATUS="Q">
+			<EXCLUDE_COLUMNS>id,versioningInformation_createdDateTime,medicationTreatment,contact,patient</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>id</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(p.id AS varchar(15)) FROM med.Prescription p 
+							WHERE p.medicationTreatment = @MedicationTreatment_id_cosmic
+							ORDER BY p.id DESC
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(p.id AS varchar(15)) FROM med.Prescription p 
+							WHERE p.medicationTreatment = @MedicationTreatment_id_nova
+							ORDER BY p.id DESC]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+		<objects TABLE_SCHEMA="med" TABLE_NAME="PrescriptionLog" STATUS="Q">
+			<EXCLUDE_COLUMNS>id,prescrption</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>id</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(pl.id AS varchar(15)) FROM med.PrescriptionLog pl INNER JOIN
+																med.Prescription p on pl.prescrption = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_cosmic
+							ORDER BY pl.id DESC
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(pl.id AS varchar(15)) FROM med.PrescriptionLog pl INNER JOIN
+																med.Prescription p on pl.prescrption = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_nova
+							ORDER BY pl.id DESC			]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+		<objects TABLE_SCHEMA="med" TABLE_NAME="PrescriptionChangeLog" STATUS="Q">
+			<EXCLUDE_COLUMNS>id,medicationTreatment,changedPrescription,originalPrescription,patient</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>id</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;							
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(id AS varchar(15)) FROM med.PrescriptionChangeLog 
+							WHERE medicationTreatment = @MedicationTreatment_id_cosmic
+							ORDER BY id DESC
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(id AS varchar(15)) FROM med.PrescriptionChangeLog 
+							WHERE medicationTreatment = @MedicationTreatment_id_nova
+							ORDER BY id DESC]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+		<objects TABLE_SCHEMA="med" TABLE_NAME="PrescriptionDetail" STATUS="Q">
+			<EXCLUDE_COLUMNS>id,prescription</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>id</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(pd.id AS varchar(15)) FROM med.PrescriptionDetail pd INNER JOIN
+																med.Prescription p on pd.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_cosmic
+							ORDER BY prescriptionDetailOrder, prescription
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(pd.id AS varchar(15)) FROM med.PrescriptionDetail pd INNER JOIN
+																med.Prescription p on pd.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_nova
+							ORDER BY prescriptionDetailOrder, prescription	]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+		<objects TABLE_SCHEMA="med" TABLE_NAME="PrescriptionDetail_substanceInformation" STATUS="Q">
+			<EXCLUDE_COLUMNS>prescriptionDetail,PrescriptionDetail_substanceInformation_index</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>CAST(prescriptionDetail AS varchar(15))+''|''+CAST([PrescriptionDetail_substanceInformation_index] AS varchar(15))</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(pds.prescriptionDetail AS varchar(15))+''|''+CAST(pds.[PrescriptionDetail_substanceInformation_index] AS varchar(15))  FROM med.PrescriptionDetail_substanceInformation pds INNER JOIN
+										  med.PrescriptionDetail pd on pd.id= pds.prescriptionDetail INNER JOIN
+										  med.Prescription p on pd.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_cosmic
+							ORDER BY pds.prescriptionDetail,pds.[PrescriptionDetail_substanceInformation_index] DESC
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(pds.prescriptionDetail AS varchar(15))+''|''+CAST(pds.[PrescriptionDetail_substanceInformation_index] AS varchar(15)) FROM med.PrescriptionDetail_substanceInformation pds INNER JOIN
+										  med.PrescriptionDetail pd on pd.id= pds.prescriptionDetail INNER JOIN
+										  med.Prescription p on pd.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_nova
+							ORDER BY pds.prescriptionDetail,pds.[PrescriptionDetail_substanceInformation_index] DESC	]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+		<objects TABLE_SCHEMA="med" TABLE_NAME="ItemDistribution" STATUS="Q">
+			<EXCLUDE_COLUMNS>id,versioningInformation_createdDateTime,prescription</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>id</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;	
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(IDT.id AS varchar(15))FROM med.ItemDistribution IDT INNER JOIN 
+										  med.Prescription p on IDT.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_cosmic
+							ORDER BY IDT.id DESC
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(IDT.id AS varchar(15)) FROM med.ItemDistribution IDT INNER JOIN 
+										  med.Prescription p on IDT.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_nova
+							ORDER BY IDT.id DESC]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+		<objects TABLE_SCHEMA="med" TABLE_NAME="DistributionPackage" STATUS="Q">
+			<EXCLUDE_COLUMNS>id,distribution</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>id</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;								
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(dp.id AS varchar(15)) FROM med.DistributionPackage dp INNER JOIN 
+																med.ItemDistribution id on id.id = dp.distribution INNER JOIN
+																med.Prescription p on id.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_cosmic
+							ORDER BY dp.id DESC							
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(dp.id AS varchar(15)) FROM med.DistributionPackage dp INNER JOIN 
+																med.ItemDistribution id on id.id = dp.distribution INNER JOIN
+																med.Prescription p on id.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_nova
+							ORDER BY dp.id DESC	]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+		<objects TABLE_SCHEMA="med" TABLE_NAME="DoseDetail" STATUS="Q">
+			<EXCLUDE_COLUMNS>id,prescription</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>id</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(dd.id AS varchar(15)) FROM med.DoseDetail dd INNER JOIN
+										  med.Prescription p on dd.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_cosmic
+							ORDER BY doseDetailOrder, prescription
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(dd.id AS varchar(15)) FROM med.DoseDetail dd INNER JOIN
+										  med.Prescription p on dd.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_nova
+							ORDER BY doseDetailOrder, prescription]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+		<objects TABLE_SCHEMA="med" TABLE_NAME="DoseInstance" STATUS="Q">
+			<EXCLUDE_COLUMNS>id,doseDetail</EXCLUDE_COLUMNS>
+			<PRIMARY_KEY_COLUMN>id</PRIMARY_KEY_COLUMN>
+			<PRIMARYKEY_SOURCE INFO="NOVA">
+				<![CDATA[	DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;															
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(di.id AS varchar(15)) FROM med.DoseInstance di INNER JOIN 
+																med.DoseDetail dd on dd.id = di.doseDetail INNER JOIN 
+																med.Prescription p on dd.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_cosmic
+							ORDER BY dd.prescription, dd.doseDetailOrder, di.doseOrder, di.doseTime, di.oneOffTime	
+							]]>
+			</PRIMARYKEY_SOURCE>
+			<PRIMARYKEY_DESTINATION INFO="COSMIC">
+				<![CDATA[DECLARE @user_id int;
+							DECLARE @MedicationTreatment_id_cosmic bigint;
+							DECLARE @MedicationTreatment_id_nova bigint;
+							SET @user_id = @DATA_CREATOR;
+
+							SELECT TOP (1) @MedicationTreatment_id_cosmic=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE versioningInformation_createdBy = @user_id
+							ORDER BY id DESC;
+
+							SELECT TOP (1) @MedicationTreatment_id_nova=[id]
+							FROM [med].[MedicationTreatment]
+							WHERE (versioningInformation_createdBy = @user_id)
+							AND ([id] NOT IN(@MedicationTreatment_id_cosmic))
+							ORDER BY id DESC;
+							
+							SET @primaryKey='''';
+							SELECT @primaryKey=@primaryKey+'',''+CAST(di.id AS varchar(15)) FROM med.DoseInstance di INNER JOIN 
+																med.DoseDetail dd on dd.id = di.doseDetail INNER JOIN 
+																med.Prescription p on dd.prescription = p.id
+							WHERE p.medicationTreatment = @MedicationTreatment_id_nova
+							ORDER BY dd.prescription, dd.doseDetailOrder, di.doseOrder, di.doseTime, di.oneOffTime	]]>
+			</PRIMARYKEY_DESTINATION>
+		</objects>
+	</TestCase>	
+</Properties>
+
