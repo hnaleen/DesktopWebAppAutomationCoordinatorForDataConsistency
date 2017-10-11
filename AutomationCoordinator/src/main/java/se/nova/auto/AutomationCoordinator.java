@@ -11,7 +11,7 @@ import se.nova.auto.test.runner.TestRunner;
 import se.nova.auto.test.suite.TestSuite;
 import se.nova.auto.test.suite.TestSuiteFactory;
 import se.nova.auto.util.ArgumentProcessor;
-import se.nova.auto.util.TestDataLogger;
+import se.nova.auto.util.TestStatusLogger;
 
 public class AutomationCoordinator
 {
@@ -21,7 +21,7 @@ public class AutomationCoordinator
 
   private TestRunner novaTestRunner;
 
-  private TestDataLogger logger;
+  private TestStatusLogger logger;
 
   private DBDiffClient diffCalculator;
 
@@ -30,44 +30,52 @@ public class AutomationCoordinator
     argumentProcessor = new ArgumentProcessor(args);
     cosmicTestRunner = new CosmicTestRunner(argumentProcessor);
     novaTestRunner = new NovaTestRunner(argumentProcessor);
-    logger = new TestDataLogger(argumentProcessor);
+    logger = new TestStatusLogger(argumentProcessor);
     diffCalculator = new DBDiffClient(argumentProcessor);
   }
 
   public static void main(String[] args)
   {
     AutomationCoordinator coordinator = new AutomationCoordinator(args);
-    coordinator.runTestSuite();
+    coordinator.run();
     System.exit(0);
   }
 
-  private void runTestSuite()
+  private void run()
   {
-    TestSuite testSuite = TestSuiteFactory.getInstance().create(argumentProcessor, argumentProcessor.getTestSuiteId());
+    List<TestSuite> testSuites = TestSuiteFactory.getInstance().getAllTestSuites();
+    testSuites.forEach(testSuite -> runTestSuite(testSuite));
+  }
+
+  private void runTestSuite(TestSuite testSuite)
+  {
     List<TestData> allTestData = testSuite.getTestDataForAllTestCases();
-    logger.logTestSuiteStart(allTestData.size());
+    logger.logTestSuiteStart(testSuite);
 
     for (TestData testData : allTestData)
     {
-//      if (executeTestCase(cosmicTestRunner, testData).isSuccessful())
+      if (executeTestCase(cosmicTestRunner, testData, testSuite.getName(), testSuite.getCosmicTestSuiteScriptName())
+          .isSuccessful())
       {
-        if (executeTestCase(novaTestRunner, testData).isSuccessful())
+        if (executeTestCase(novaTestRunner, testData, testSuite.getName(), testSuite.getNovaTestSuiteScriptName())
+            .isSuccessful())
         {
           calculateDiffAndGenerateReport(testData);
         }
       }
     }
-    
-    logger.logTestSuiteFinish();
+
+    logger.logTestSuiteFinish(testSuite);
   }
 
-  private TestResult executeTestCase(TestRunner testRunner, TestData testData)
+  private TestResult executeTestCase(TestRunner testRunner, TestData testData, String testSuiteName,
+                                     String testScriptName)
   {
     logger.logTestCaseStart(testRunner, testData);
     TestResult testResult;
     try
     {
-      testResult = testRunner.runTest(testData);
+      testResult = testRunner.runTest(testData, testScriptName);
     }
     catch (Exception e)
     {

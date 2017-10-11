@@ -15,36 +15,47 @@ import se.nova.auto.dto.TestData;
 import se.nova.auto.dto.TestResult;
 import se.nova.auto.test.runner.CosmicTestRunner;
 import se.nova.auto.test.runner.TestRunner;
+import se.nova.auto.test.suite.TestSuite;
 
-public class TestDataLogger
+public class TestStatusLogger
 {
-  File testSuiteResultFolder;
+  File testResultMainFolder;
+
+  File currentTestSuiteResultFolder;
 
   Logger logger = Logger.getLogger("DiffApp");
 
   ArgumentProcessor argumentProcessor;
 
-  public TestDataLogger(ArgumentProcessor argumentProcessor)
+  public TestStatusLogger(ArgumentProcessor argumentProcessor)
   {
     this.argumentProcessor = argumentProcessor;
-    setupTestSuiteFolder();
+    setupTestResultsMainFolder();
     initLogger();
   }
 
-  private void setupTestSuiteFolder()
+  private void setupTestResultsMainFolder()
   {
-    testSuiteResultFolder = new File(argumentProcessor.getTestResultDir() + "\\" + getTestSuiteName());
-    testSuiteResultFolder.mkdir();
+    testResultMainFolder = new File(argumentProcessor.getTestResultDir() + "\\" + getTestResultFolderName());
+    testResultMainFolder.mkdir();
   }
 
-  public void logTestSuiteStart(int numberOfTestCases)
+  public void logTestSuiteStart(TestSuite testSuite)
   {
-    logger.info("Execution of Test Suite Started (Test Case Count: " + numberOfTestCases + ") \n");
+    setupTestSuiteResultFolder(testSuite);
+    logger.info("Execution of Test Suite : [" + testSuite.getName() + "] Started (Test Case Count: "
+        + testSuite.getTestDataForAllTestCases().size() + ") \n");
   }
 
-  public void logTestSuiteFinish()
+  private void setupTestSuiteResultFolder(TestSuite testSuite)
   {
-    logger.info("Test Suite Completed");
+    currentTestSuiteResultFolder = new File(testResultMainFolder.getPath() + "\\" + testSuite.getName());
+    currentTestSuiteResultFolder.mkdir();
+  }
+
+  public void logTestSuiteFinish(TestSuite testSuite)
+  {
+    logger.info("Execution of Test Suite : [" + testSuite.getName() + "]  Completed.");
   }
 
   public void logTestCaseStart(TestRunner testRunner, TestData testData)
@@ -88,7 +99,7 @@ public class TestDataLogger
     try
     {
       BufferedWriter writer = new BufferedWriter(
-          new FileWriter(testSuiteResultFolder.getPath() + "\\" + testData.getTestCaseId() + ".json", true));
+          new FileWriter(currentTestSuiteResultFolder.getPath() + "\\" + testData.getTestCaseId() + ".json", true));
       writer.append(diffInJson);
       writer.close();
       logger.info("Diff calculation for Test Case ID :" + testData.getTestCaseId() + " finished sucessfully\n");
@@ -104,7 +115,7 @@ public class TestDataLogger
   {
     try
     {
-      String logFileName = testSuiteResultFolder.getPath() + "/TestSuite.log";
+      String logFileName = testResultMainFolder.getPath() + "/TestSuite.log";
       logger.addAppender(
           new RollingFileAppender(new PatternLayout("%d{yyyy-MMM-dd HH:mm:ss,SSS} %x[%-5p] %m%n"), logFileName, true));
     }
@@ -114,13 +125,13 @@ public class TestDataLogger
     }
   }
 
-  private String getTestSuiteName()
+  private String getTestResultFolderName()
   {
-    return new SimpleDateFormat("yyyy.MM.dd_hh-mm").format(new Date());
+    return new SimpleDateFormat("yyyy.MM.dd_hh.mma").format(new Date());
   }
 
   public void logException(Exception e)
   {
-	logger.error(e.getMessage() + " " + e.getStackTrace().toString());
+    logger.error(e.getMessage() + " " + e.getStackTrace().toString());
   }
 }

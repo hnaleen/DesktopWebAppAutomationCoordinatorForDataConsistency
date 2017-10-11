@@ -2,31 +2,25 @@ package se.nova.auto.util;
 
 public class ArgumentProcessor
 {
-  private String testDataDir;
+  private static String testDataDir;
 
-  private String testScriptDir;
+  private static String testScriptDir;
 
-  private String testScript;
+  private static String novaTestRunnerUrl;
   
-  private String novaTestRunnerUrl;
+  private static String local;
   
-  private String testSuiteId;
+  private static String diffUrl;
   
-  private String local;
-  
-  private String diffUrl;
-  
-  private String testResultDir;
+  private static String testResultDir;
 
-  private String novaUrl;
+  private static String novaUrl;
 
   public ArgumentProcessor(String args[])
   {
     testDataDir = getValueByKey("-testDataDir=", args);
     testScriptDir = getValueByKey("-testScriptDir=", args);
-    testScript = getValueByKey("-testScript=", args);
     novaTestRunnerUrl = getValueByKey("-novaTestRunnerUrl=", args);
-    testSuiteId = getValueByKey("-testSuiteId=", args);
     local = getValueByKey("-local=", args);
     diffUrl = getValueByKey("-diffUrl=", args);
     testResultDir = getValueByKey("-testResultDir=", args);
@@ -47,47 +41,37 @@ public class ArgumentProcessor
     return value;
   }
 
-  public String getTestDataDirectory()
+  public static String getTestDataDirectory()
   {
     return testDataDir;
   }
 
-  public String getTestScriptDirectory()
+  public static String getTestScriptDirectory()
   {
     return testScriptDir;
   }
 
-  public String getTestScript()
-  {
-    return testScript;
-  }
-  
-  public String getNovaTestRunnerUrl()
+  public static String getNovaTestRunnerUrl()
   {
     return novaTestRunnerUrl;
   }
   
-  public String getTestSuiteId()
-  {
-    return testSuiteId;
-  }
-  
-  public boolean runInLocalMode()
+  public static boolean runInLocalMode()
   {
     return local.equalsIgnoreCase("true");
   }
   
-  public String getDiffUrl()
+  public static String getDiffUrl()
   {
     return diffUrl;
   }
   
-  public String getTestResultDir()
+  public static String getTestResultDir()
   {
     return testResultDir;
   }
   
-  public String getNovaUrl()
+  public static String getNovaUrl()
   {
     return novaUrl;
   }

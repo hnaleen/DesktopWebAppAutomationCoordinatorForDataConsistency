@@ -18,11 +18,11 @@ public class CosmicTestRunner implements TestRunner
     this.argumentProcessor = argumentProcessor;
   }
 
-  public TestResult runTest(TestData testData)
+  public TestResult runTest(TestData testData, String testScriptName)
   {
     Properties properties = testData.toProperties();
     boolean isTestSucess = cosmicAutomator
-        .runCosmicTestCase(argumentProcessor.getTestScriptDirectory(), argumentProcessor.getTestScript(), properties);
+        .runCosmicTestCase(argumentProcessor.getTestScriptDirectory(), testScriptName, properties);
     return isTestSucess ? TestResult.SUCESS : TestResult.FAILURE;
   }
 

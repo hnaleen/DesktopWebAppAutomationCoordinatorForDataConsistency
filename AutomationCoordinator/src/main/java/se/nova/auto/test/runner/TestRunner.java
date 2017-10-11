@@ -5,7 +5,7 @@ import se.nova.auto.dto.TestResult;
 
 public interface TestRunner
 {
-  TestResult runTest(TestData testData);
+  TestResult runTest(TestData testData, String testScriptName);
   
   String getName();
 }

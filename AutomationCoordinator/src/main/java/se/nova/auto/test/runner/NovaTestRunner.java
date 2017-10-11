@@ -30,12 +30,11 @@ public class NovaTestRunner implements TestRunner
     client = Client.create(clientConfig);
   }
 
-  public TestResult runTest(TestData testData)
+  public TestResult runTest(TestData testData, String testScriptName)
   {
     WebResource webResourcePost = client.resource(argumentProcessor.getNovaTestRunnerUrl());
     ClientResponse response = webResourcePost.type("application/json").post(ClientResponse.class,
-        new NovaTestDataWrapper(argumentProcessor.getNovaUrl(), testData));
-    //    TestData testCaseResult = response.getEntity(TestData.class); //TODO change TestData to TestResult
+        new NovaTestCaseInfo(argumentProcessor.getNovaUrl(), testScriptName, testData));
     StatusType testStatus = response.getStatusInfo();
     return testStatus.getFamily() == Status.Family.SUCCESSFUL ? TestResult.SUCESS : TestResult.FAILURE;
   }
@@ -46,19 +45,22 @@ public class NovaTestRunner implements TestRunner
   }
 
   @XmlRootElement
-  private class NovaTestDataWrapper
+  private class NovaTestCaseInfo
   {
     String novaUrl;
+    
+    String testScriptName;
 
     TestData testData;
 
-    public NovaTestDataWrapper()
+    public NovaTestCaseInfo()
     {
     }
 
-    public NovaTestDataWrapper(String novaUrl, TestData testData)
+    public NovaTestCaseInfo(String novaUrl, String testScriptName, TestData testData)
     {
       this.novaUrl = novaUrl;
+      this.testScriptName = testScriptName;
       this.testData = testData;
     }
 
@@ -66,10 +68,10 @@ public class NovaTestRunner implements TestRunner
     {
       return novaUrl;
     }
-
-    public void setNovaUrl(String novaUrl)
+    
+    public String getTestScriptName()
     {
-      this.novaUrl = novaUrl;
+      return testScriptName;
     }
 
     public TestData getTestData()
@@ -77,9 +79,5 @@ public class NovaTestRunner implements TestRunner
       return testData;
     }
 
-    public void setTestData(TestData testData)
-    {
-      this.testData = testData;
-    }
   }
 }

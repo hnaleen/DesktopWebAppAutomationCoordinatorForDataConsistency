@@ -11,27 +11,24 @@ import javax.xml.bind.Unmarshaller;
 import se.nova.auto.dto.TestData;
 import se.nova.auto.util.ArgumentProcessor;
 
-public class TestSuite
+public abstract class TestSuite
 {
-  private ArgumentProcessor argumentProcessor;
-
-  private Class<? extends TestData> testDataClazz;
-
-  public TestSuite(ArgumentProcessor argumentProcessor, Class<? extends TestData> testDataClazz)
+  private List<TestData> allTestData;
+  
+  public TestSuite()
   {
-    this.argumentProcessor = argumentProcessor;
-    this.testDataClazz = testDataClazz;
+    allTestData = loadTestDataInFolder(ArgumentProcessor.getTestDataDirectory(), getName());
   }
 
   public List<TestData> getTestDataForAllTestCases()
   {
-    return loadTestDataInFolder(argumentProcessor.getTestDataDirectory());
+    return allTestData;
   }
 
-  private List<TestData> loadTestDataInFolder(String testDataDir)
+  private List<TestData> loadTestDataInFolder(String baseTestDataDirectory, String testSuiteDirectory)
   {
     List<TestData> allTestData = new ArrayList<TestData>();
-    File folder = new File(testDataDir);
+    File folder = new File(baseTestDataDirectory + "\\" + testSuiteDirectory);
     for (File file : folder.listFiles())
     {
       if (isXmlFile(file))
@@ -52,7 +49,7 @@ public class TestSuite
     TestData testData = null;
     try
     {
-      JAXBContext jaxbContext = JAXBContext.newInstance(testDataClazz);
+      JAXBContext jaxbContext = JAXBContext.newInstance(getTestDataClass());
       Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
       testData = (TestData) jaxbUnmarshaller.unmarshal(xmlFile);
     }
@@ -76,5 +73,13 @@ public class TestSuite
     else
       return "";
   }
+
+  public abstract String getName();
+
+  public abstract Class<? extends TestData> getTestDataClass();
+
+  public abstract String getCosmicTestSuiteScriptName();
+
+  public abstract String getNovaTestSuiteScriptName();
 
 }
