@@ -15,14 +15,25 @@ public abstract class TestSuite
 {
   private List<TestData> allTestData;
   
-  public TestSuite()
-  {
-    allTestData = loadTestDataInFolder(ArgumentProcessor.getTestDataDirectory(), getName());
-  }
+  private List<TestData> failedTestDataForRetry = new ArrayList<>();
 
   public List<TestData> getTestDataForAllTestCases()
   {
+    if (allTestData == null) 
+    {
+      allTestData = loadTestDataInFolder(ArgumentProcessor.getInstance().getTestDataDirectory(), getName());
+    }
     return allTestData;
+  }
+  
+  public void addFailedTestCaseForRetry(TestData testCase)
+  {
+    failedTestDataForRetry.add(testCase);
+  }
+  
+  public List<TestData> getFailedTestDataForRetry()
+  {
+    return failedTestDataForRetry;
   }
 
   private List<TestData> loadTestDataInFolder(String baseTestDataDirectory, String testSuiteDirectory)
@@ -78,8 +89,12 @@ public abstract class TestSuite
 
   public abstract Class<? extends TestData> getTestDataClass();
 
-  public abstract String getCosmicTestSuiteScriptName();
+  public abstract String getCosmicAutomationTestSuiteScript();
 
-  public abstract String getNovaTestSuiteScriptName();
+  public abstract String getNovaAutomationTestSuiteScript();
+
+  public abstract String getCosmicAFTBootstrapScript();
+
+  public abstract String getNovaAFTBootstrapScript();
 
 }

@@ -19,7 +19,7 @@ public class TestSuiteFactory
   
   private List<String> getAvailableTestSuiteNames()
   {
-    String mainTestDataDirectoryPath = ArgumentProcessor.getTestDataDirectory();
+    String mainTestDataDirectoryPath = ArgumentProcessor.getInstance().getTestDataDirectory();
     File mainTestDataDirectory = new File(mainTestDataDirectoryPath);
     String[] testSuiteNames = mainTestDataDirectory.list(new FilenameFilter()
     {

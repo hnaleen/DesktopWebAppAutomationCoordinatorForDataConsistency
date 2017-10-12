@@ -10,15 +10,14 @@ import se.nova.auto.util.ArgumentProcessor;
 
 public class DBDiffClient
 {
-  private ArgumentProcessor argumentProcessor;
+  private ArgumentProcessor argumentProcessor = ArgumentProcessor.getInstance();
 
   ClientConfig clientConfig = new DefaultClientConfig();
 
   Client client;
 
-  public DBDiffClient(ArgumentProcessor argumentProcessor)
+  public DBDiffClient()
   {
-    this.argumentProcessor = argumentProcessor;
     clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
     client = Client.create(clientConfig);
   }

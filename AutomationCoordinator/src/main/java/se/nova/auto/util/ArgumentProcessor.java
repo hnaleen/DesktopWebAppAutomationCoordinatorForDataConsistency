@@ -2,21 +2,32 @@ package se.nova.auto.util;
 
 public class ArgumentProcessor
 {
-  private static String testDataDir;
+  private static ArgumentProcessor instance;
 
-  private static String testScriptDir;
+  private String testDataDir;
 
-  private static String novaTestRunnerUrl;
+  private String testScriptDir;
+
+  private String novaTestRunnerUrl;
+
+  private String local;
+
+  private String diffUrl;
+
+  private String testResultDir;
+
+  private String novaUrl;
   
-  private static String local;
-  
-  private static String diffUrl;
-  
-  private static String testResultDir;
+  public static ArgumentProcessor getInstance()
+  {
+    if (instance == null)
+    {
+      instance = new ArgumentProcessor();
+    }
+    return instance;
+  }
 
-  private static String novaUrl;
-
-  public ArgumentProcessor(String args[])
+  public void init(String args[])
   {
     testDataDir = getValueByKey("-testDataDir=", args);
     testScriptDir = getValueByKey("-testScriptDir=", args);
@@ -41,37 +52,37 @@ public class ArgumentProcessor
     return value;
   }
 
-  public static String getTestDataDirectory()
+  public String getTestDataDirectory()
   {
     return testDataDir;
   }
 
-  public static String getTestScriptDirectory()
+  public String getTestScriptDirectory()
   {
     return testScriptDir;
   }
 
-  public static String getNovaTestRunnerUrl()
+  public String getNovaTestRunnerUrl()
   {
     return novaTestRunnerUrl;
   }
-  
-  public static boolean runInLocalMode()
+
+  public boolean runInLocalMode()
   {
     return local.equalsIgnoreCase("true");
   }
-  
-  public static String getDiffUrl()
+
+  public String getDiffUrl()
   {
     return diffUrl;
   }
-  
-  public static String getTestResultDir()
+
+  public String getTestResultDir()
   {
     return testResultDir;
   }
-  
-  public static String getNovaUrl()
+
+  public String getNovaUrl()
   {
     return novaUrl;
   }

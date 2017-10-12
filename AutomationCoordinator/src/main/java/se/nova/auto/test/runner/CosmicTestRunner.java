@@ -9,20 +9,13 @@ import se.nova.auto.util.ArgumentProcessor;
 
 public class CosmicTestRunner implements TestRunner
 {
-  private ArgumentProcessor argumentProcessor;
-
   Main cosmicAutomator = new Main();
 
-  public CosmicTestRunner(ArgumentProcessor argumentProcessor)
-  {
-    this.argumentProcessor = argumentProcessor;
-  }
-
-  public TestResult runTest(TestData testData, String testScriptName)
+  public TestResult runTest(TestData testData, String testFrameworkBootstrapScipt, String testSuiteScript)
   {
     Properties properties = testData.toProperties();
-    boolean isTestSucess = cosmicAutomator
-        .runCosmicTestCase(argumentProcessor.getTestScriptDirectory(), testScriptName, properties);
+    boolean isTestSucess = cosmicAutomator.runCosmicTestCase(ArgumentProcessor.getInstance().getTestScriptDirectory(),
+        testFrameworkBootstrapScipt, testSuiteScript, properties);
     return isTestSucess ? TestResult.SUCESS : TestResult.FAILURE;
   }
 

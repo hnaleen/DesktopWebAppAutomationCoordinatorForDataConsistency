@@ -25,11 +25,10 @@ public class TestStatusLogger
 
   Logger logger = Logger.getLogger("DiffApp");
 
-  ArgumentProcessor argumentProcessor;
+  ArgumentProcessor argumentProcessor = ArgumentProcessor.getInstance();
 
-  public TestStatusLogger(ArgumentProcessor argumentProcessor)
+  public TestStatusLogger()
   {
-    this.argumentProcessor = argumentProcessor;
     setupTestResultsMainFolder();
     initLogger();
   }
@@ -39,12 +38,30 @@ public class TestStatusLogger
     testResultMainFolder = new File(argumentProcessor.getTestResultDir() + "\\" + getTestResultFolderName());
     testResultMainFolder.mkdir();
   }
+  
+  public void logTestSuiteStart(TestSuite testSuite, boolean isFirstAttempt)
+  {
+    if (isFirstAttempt)
+    {
+      logTestSuiteStart(testSuite);
+    }
+    else
+    {
+      logTestSuiteRetryStart(testSuite);
+    }
+  }
 
-  public void logTestSuiteStart(TestSuite testSuite)
+  private void logTestSuiteStart(TestSuite testSuite)
   {
     setupTestSuiteResultFolder(testSuite);
     logger.info("Execution of Test Suite : [" + testSuite.getName() + "] Started (Test Case Count: "
         + testSuite.getTestDataForAllTestCases().size() + ") \n");
+  }
+  
+  private void logTestSuiteRetryStart(TestSuite testSuite)
+  {
+    logger.info("Re-Execution of Test Suite : [" + testSuite.getName() + "] (Test Case Count: "
+        + testSuite.getFailedTestDataForRetry().size() + ") \n");
   }
 
   private void setupTestSuiteResultFolder(TestSuite testSuite)
@@ -52,18 +69,40 @@ public class TestStatusLogger
     currentTestSuiteResultFolder = new File(testResultMainFolder.getPath() + "\\" + testSuite.getName());
     currentTestSuiteResultFolder.mkdir();
   }
+  
+  public void logTestSuiteFinish(TestSuite testSuite, boolean isFirstAttempt)
+  {
+    if(isFirstAttempt)
+    {
+      logTestSuiteFinish(testSuite);
+    }
+    else
+    {
+      logTestSuiteRetryFinish(testSuite);
+    }
+  }
 
-  public void logTestSuiteFinish(TestSuite testSuite)
+  private void logTestSuiteFinish(TestSuite testSuite)
   {
     logger.info("Execution of Test Suite : [" + testSuite.getName() + "]  Completed.");
   }
-
-  public void logTestCaseStart(TestRunner testRunner, TestData testData)
+  
+  private void logTestSuiteRetryFinish(TestSuite testSuite)
   {
-    logger.info("Executing Test Case ID :" + testData.getTestCaseId() + " in " + testRunner.getName());
+    logger.info("Re-Execution of Test Suite : [" + testSuite.getName() + "]  Completed.");
   }
 
-  public void logTestCaseFinish(TestRunner testRunner, TestData testData, TestResult testResult)
+  public void logTestCaseStart(TestRunner testRunner, TestData testData, boolean isFirstAttempt)
+  {
+    String msg = "Executing Test Case ID :" + testData.getTestCaseId() + " in " + testRunner.getName();
+    if (!isFirstAttempt) 
+    {
+      msg += "Re-";
+    }
+    logger.info(msg);
+  }
+
+  public void logTestCaseFinish(TestRunner testRunner, TestData testData, TestResult testResult, boolean isFirstAttempt)
   {
     if (testResult.isSuccessful())
     {

@@ -17,24 +17,23 @@ import se.nova.auto.util.ArgumentProcessor;
 
 public class NovaTestRunner implements TestRunner
 {
-  private ArgumentProcessor argumentProcessor;
+  private ArgumentProcessor argumentProcessor = ArgumentProcessor.getInstance();
 
   ClientConfig clientConfig = new DefaultClientConfig();
 
   Client client;
 
-  public NovaTestRunner(ArgumentProcessor argumentProcessor)
+  public NovaTestRunner()
   {
-    this.argumentProcessor = argumentProcessor;
     clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
     client = Client.create(clientConfig);
   }
 
-  public TestResult runTest(TestData testData, String testScriptName)
+  public TestResult runTest(TestData testData, String testFrameworkBootstrapScipt, String testSuiteScript)
   {
     WebResource webResourcePost = client.resource(argumentProcessor.getNovaTestRunnerUrl());
     ClientResponse response = webResourcePost.type("application/json").post(ClientResponse.class,
-        new NovaTestCaseInfo(argumentProcessor.getNovaUrl(), testScriptName, testData));
+        new NovaTestCaseInfo(argumentProcessor.getNovaUrl(), testFrameworkBootstrapScipt, testSuiteScript, testData));
     StatusType testStatus = response.getStatusInfo();
     return testStatus.getFamily() == Status.Family.SUCCESSFUL ? TestResult.SUCESS : TestResult.FAILURE;
   }
@@ -48,7 +47,9 @@ public class NovaTestRunner implements TestRunner
   private class NovaTestCaseInfo
   {
     String novaUrl;
-    
+
+    String testFrameworkBootsrapScript;
+
     String testScriptName;
 
     TestData testData;
@@ -57,9 +58,11 @@ public class NovaTestRunner implements TestRunner
     {
     }
 
-    public NovaTestCaseInfo(String novaUrl, String testScriptName, TestData testData)
+    public NovaTestCaseInfo(String novaUrl, String testFrameworkBootsrapScript, String testScriptName,
+                            TestData testData)
     {
       this.novaUrl = novaUrl;
+      this.testFrameworkBootsrapScript = testFrameworkBootsrapScript;
       this.testScriptName = testScriptName;
       this.testData = testData;
     }
@@ -68,16 +71,20 @@ public class NovaTestRunner implements TestRunner
     {
       return novaUrl;
     }
-    
+
     public String getTestScriptName()
     {
       return testScriptName;
+    }
+
+    public String getTestFrameworkBootsrapScript()
+    {
+      return testFrameworkBootsrapScript;
     }
 
     public TestData getTestData()
     {
       return testData;
     }
-
   }
 }

@@ -15,8 +15,6 @@ import se.nova.auto.util.TestStatusLogger;
 
 public class AutomationCoordinator
 {
-  private ArgumentProcessor argumentProcessor;
-
   private TestRunner cosmicTestRunner;
 
   private TestRunner novaTestRunner;
@@ -27,21 +25,20 @@ public class AutomationCoordinator
 
   public AutomationCoordinator(String[] args)
   {
-    argumentProcessor = new ArgumentProcessor(args);
-    cosmicTestRunner = new CosmicTestRunner(argumentProcessor);
-    novaTestRunner = new NovaTestRunner(argumentProcessor);
-    logger = new TestStatusLogger(argumentProcessor);
-    diffCalculator = new DBDiffClient(argumentProcessor);
+    ArgumentProcessor.getInstance().init(args);
+    cosmicTestRunner = new CosmicTestRunner();
+    novaTestRunner = new NovaTestRunner();
+    logger = new TestStatusLogger();
+    diffCalculator = new DBDiffClient();
   }
 
   public static void main(String[] args)
   {
-    AutomationCoordinator coordinator = new AutomationCoordinator(args);
-    coordinator.run();
+    new AutomationCoordinator(args).runAllTestSuites();
     System.exit(0);
   }
 
-  private void run()
+  private void runAllTestSuites()
   {
     List<TestSuite> testSuites = TestSuiteFactory.getInstance().getAllTestSuites();
     testSuites.forEach(testSuite -> runTestSuite(testSuite));
@@ -49,46 +46,55 @@ public class AutomationCoordinator
 
   private void runTestSuite(TestSuite testSuite)
   {
-    List<TestData> allTestData = testSuite.getTestDataForAllTestCases();
-    logger.logTestSuiteStart(testSuite);
-
-    for (TestData testData : allTestData)
-    {
-      if (executeTestCase(cosmicTestRunner, testData, testSuite.getName(), testSuite.getCosmicTestSuiteScriptName())
-          .isSuccessful())
-      {
-        if (executeTestCase(novaTestRunner, testData, testSuite.getName(), testSuite.getNovaTestSuiteScriptName())
-            .isSuccessful())
-        {
-          calculateDiffAndGenerateReport(testData);
-        }
-      }
-    }
-
-    logger.logTestSuiteFinish(testSuite);
+    runSelectedTestCasesInSuite(testSuite, testSuite.getTestDataForAllTestCases(), true);
+    runSelectedTestCasesInSuite(testSuite, testSuite.getFailedTestDataForRetry(), false);
   }
 
-  private TestResult executeTestCase(TestRunner testRunner, TestData testData, String testSuiteName,
-                                     String testScriptName)
+  private void runSelectedTestCasesInSuite(TestSuite testSuite, List<TestData> testDataList, boolean isFirstAttempt)
   {
-    logger.logTestCaseStart(testRunner, testData);
+    logger.logTestSuiteStart(testSuite, isFirstAttempt);
+    testDataList.forEach(testData -> runTestCaseInBothClients(testSuite, testData, isFirstAttempt));
+    logger.logTestSuiteFinish(testSuite, isFirstAttempt);
+  }
+
+  private void runTestCaseInBothClients(TestSuite testSuite, TestData testData, boolean isFirstAttempt)
+  {
+    if (runTestCase(cosmicTestRunner, testData, testSuite.getName(), testSuite.getCosmicAFTBootstrapScript(),
+        testSuite.getCosmicAutomationTestSuiteScript(), isFirstAttempt).isSuccessful())
+    {
+      if (runTestCase(novaTestRunner, testData, testSuite.getName(), testSuite.getNovaAFTBootstrapScript(),
+          testSuite.getNovaAutomationTestSuiteScript(), isFirstAttempt).isSuccessful())
+      {
+        calculateDiffAndGenerateReport(testData);
+      }
+    }
+    else
+    {
+      testSuite.addFailedTestCaseForRetry(testData);
+    }
+  }
+
+  private TestResult runTestCase(TestRunner testRunner, TestData testData, String testSuiteName,
+                                 String testFrameworkBootstrapScipt, String testSuiteScript, boolean isFirstAttempt)
+  {
+    logger.logTestCaseStart(testRunner, testData, isFirstAttempt);
     TestResult testResult;
     try
     {
-      testResult = testRunner.runTest(testData, testScriptName);
+      testResult = testRunner.runTest(testData, testFrameworkBootstrapScipt, testSuiteScript);
     }
     catch (Exception e)
     {
       testResult = TestResult.FAILURE;
       logger.logException(e);
     }
-    logger.logTestCaseFinish(testRunner, testData, testResult);
+    logger.logTestCaseFinish(testRunner, testData, testResult, isFirstAttempt);
     return testResult;
   }
 
   private void calculateDiffAndGenerateReport(TestData testData)
   {
-    if (argumentProcessor.runInLocalMode())
+    if (ArgumentProcessor.getInstance().runInLocalMode())
     {
       logger.logDiffStart(testData);
       String diffInJson = diffCalculator.calculateDiffForUser(testData.getUserId());

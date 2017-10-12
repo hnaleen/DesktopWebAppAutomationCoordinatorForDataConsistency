@@ -21,6 +21,7 @@ public class TestSuiteRepository
   public TestSuiteRepository()
   {
     registerTestSuite(new Phase1TestSuite());
+    registerTestSuite(new Phase2TestSuite());
   }
   
   private void registerTestSuite(TestSuite testSuite)

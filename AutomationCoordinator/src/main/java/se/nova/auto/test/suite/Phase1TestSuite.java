@@ -16,15 +16,27 @@ public class Phase1TestSuite extends TestSuite
   {
     return Phase1TestData.class;
   }
-
+  
   @Override
-  public String getCosmicTestSuiteScriptName()
+  public String getCosmicAFTBootstrapScript()
   {
     return "tempDevMode";
   }
+  
+  @Override
+  public String getNovaAFTBootstrapScript()
+  {
+    return null;
+  }
 
   @Override
-  public String getNovaTestSuiteScriptName()
+  public String getCosmicAutomationTestSuiteScript()
+  {
+    return "nova_Phase_01";
+  }
+
+  @Override
+  public String getNovaAutomationTestSuiteScript()
   {
     return null;
   }
