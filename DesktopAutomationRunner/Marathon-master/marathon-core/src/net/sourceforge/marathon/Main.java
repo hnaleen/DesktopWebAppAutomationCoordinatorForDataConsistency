@@ -106,14 +106,15 @@ public class Main {
       Main main = new Main();
       Properties testData = new Properties();
       testData.put("templateName", "Sample Template");
-      main.runCosmicTestCase("C:\\CosmicAutomation\\aftframework_nova_August_2017", "tempDevMode", testData);
+      main.runCosmicTestCase("C:\\CosmicAutomation\\aftframework_nova_August_2017", "tempDevMode", "tempDevMode", testData);
     }
     
-  public boolean runCosmicTestCase(String testDir, String testScriptName, Properties testData) //HNA
+  public boolean runCosmicTestCase(String testDir, String bootstrapScriptName, String testCaseScriptName, Properties testCaseInfo) //HNA
   {
     argProcessor = new ArgumentProcessor();
-    argProcessor.process(new String[] { testDir, testScriptName });
-    return runTestCaseWithData(testData);
+    argProcessor.process(new String[] { testDir, bootstrapScriptName });
+    testCaseInfo.put("TestCaseScriptName", testCaseScriptName);
+    return runTestCaseWithData(testCaseInfo);
   }
     
     
