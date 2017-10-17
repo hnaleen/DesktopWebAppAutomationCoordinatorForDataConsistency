@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -38,12 +39,13 @@ public class TestStatusLogger
     testResultMainFolder = new File(argumentProcessor.getTestResultDir() + "\\" + getTestResultFolderName());
     testResultMainFolder.mkdir();
   }
-  
+
   public void logTestSuiteStart(TestSuite testSuite, boolean isFirstAttempt)
   {
     if (isFirstAttempt)
     {
       logTestSuiteStart(testSuite);
+      TestStatusSummarizer.getInstance().init(testSuite);
     }
     else
     {
@@ -54,14 +56,14 @@ public class TestStatusLogger
   private void logTestSuiteStart(TestSuite testSuite)
   {
     setupTestSuiteResultFolder(testSuite);
-    logger.info("Execution of Test Suite : [" + testSuite.getName() + "] Started (Test Case Count: "
-        + testSuite.getTestDataForAllTestCases().size() + ") \n");
+    logger.info("---------------Execution of Test Suite : [" + testSuite.getName() + "] Started (Test Case Count: "
+        + testSuite.getTestDataForAllTestCases().size() + ")--------------- \n");
   }
-  
+
   private void logTestSuiteRetryStart(TestSuite testSuite)
   {
-    logger.info("Re-Execution of Test Suite : [" + testSuite.getName() + "] (Test Case Count: "
-        + testSuite.getFailedTestDataForRetry().size() + ") \n");
+    logger.info("---------------Re-Execution of Test Suite : [" + testSuite.getName() + "] (Test Case Count: "
+        + testSuite.getFailedTestDataForRetry().size() + ")--------------- \n");
   }
 
   private void setupTestSuiteResultFolder(TestSuite testSuite)
@@ -69,10 +71,10 @@ public class TestStatusLogger
     currentTestSuiteResultFolder = new File(testResultMainFolder.getPath() + "\\" + testSuite.getName());
     currentTestSuiteResultFolder.mkdir();
   }
-  
+
   public void logTestSuiteFinish(TestSuite testSuite, boolean isFirstAttempt)
   {
-    if(isFirstAttempt)
+    if (isFirstAttempt)
     {
       logTestSuiteFinish(testSuite);
     }
@@ -84,26 +86,30 @@ public class TestStatusLogger
 
   private void logTestSuiteFinish(TestSuite testSuite)
   {
-    logger.info("Execution of Test Suite : [" + testSuite.getName() + "]  Completed.");
+    logger.info("---------------Execution of Test Suite : [" + testSuite.getName() + "]  Completed---------------\n\n");
   }
-  
+
   private void logTestSuiteRetryFinish(TestSuite testSuite)
   {
-    logger.info("Re-Execution of Test Suite : [" + testSuite.getName() + "]  Completed.");
+    logger.info("---------------Re-Execution of Test Suite : [" + testSuite.getName() + "]  Completed---------------\n\n");
   }
 
   public void logTestCaseStart(TestRunner testRunner, TestData testData, boolean isFirstAttempt)
   {
     String msg = "Executing Test Case ID :" + testData.getTestCaseId() + " in " + testRunner.getName();
-    if (!isFirstAttempt) 
+    if (!isFirstAttempt)
     {
-      msg += "Re-";
+      msg = "Re-" + msg;
     }
     logger.info(msg);
   }
 
-  public void logTestCaseFinish(TestRunner testRunner, TestData testData, TestResult testResult, boolean isFirstAttempt)
+  public void logTestCaseFinish(TestRunner testRunner, TestData testData, String testSuiteName, TestResult testResult,
+                                boolean isFirstAttempt)
   {
+    TestStatusSummarizer.getInstance().setTestCaseStatus(testSuiteName, testData.getTestCaseId(),
+        isExecutedInCosmic(testRunner), testResult.isSuccessful());
+
     if (testResult.isSuccessful())
     {
       logger
@@ -112,7 +118,7 @@ public class TestStatusLogger
     else
     {
       logger.error("Execution of Test Case ID :" + testData.getTestCaseId() + " failed in " + testRunner.getName());
-      if (isFailureInCosmic(testRunner))
+      if (isExecutedInCosmic(testRunner))
       {
         logger.error("Execution of Test Case ID :" + testData.getTestCaseId() + " will be skipped in Nova");
       }
@@ -123,7 +129,7 @@ public class TestStatusLogger
     }
   }
 
-  private boolean isFailureInCosmic(TestRunner testRunner)
+  private boolean isExecutedInCosmic(TestRunner testRunner)
   {
     return testRunner instanceof CosmicTestRunner;
   }
@@ -172,5 +178,27 @@ public class TestStatusLogger
   public void logException(Exception e)
   {
     logger.error(e.getMessage() + " " + e.getStackTrace().toString());
+  }
+
+  public void logAllTestSuitsFinish()
+  {
+    List<String> failedTestCasesInCosmic = TestStatusSummarizer.getInstance().getFailedTestCasesInCosmic();
+    List<String> failedTestCasesInNova = TestStatusSummarizer.getInstance().getFailedTestCasesInNova();
+    if (!failedTestCasesInCosmic.isEmpty() || !failedTestCasesInNova.isEmpty())
+    {
+      logger.error("***********************************************************************");
+      logger.error("******************************* SUMMARY *******************************");
+      logger.error("***********************************************************************\n");
+      
+      if (!failedTestCasesInCosmic.isEmpty())
+      {
+        logger.error("Test Cases IDs failed in Cosmic : " + failedTestCasesInCosmic.toString());
+      }
+      
+      if (!failedTestCasesInNova.isEmpty())
+      {
+        logger.error("Test Cases IDs failed in Nova : " + failedTestCasesInNova.toString());
+      }
+    }
   }
 }

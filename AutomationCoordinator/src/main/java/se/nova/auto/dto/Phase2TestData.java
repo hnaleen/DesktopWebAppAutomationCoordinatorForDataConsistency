@@ -145,7 +145,7 @@ public class Phase2TestData implements TestData
     properties.setProperty("patientId", cosmicPatientId);
     properties.setProperty("patientName", novaPatientName);
     properties.setProperty("templateName", templateName);
-    properties.setProperty("templateType;", templateType);
+    properties.setProperty("templateType", templateType);
     properties.setProperty("testCaseStatus", testCaseStatus);
     if (pgd != null)
     {

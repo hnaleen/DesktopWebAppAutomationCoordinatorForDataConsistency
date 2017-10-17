@@ -1,5 +1,6 @@
 package se.nova.auto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import se.nova.auto.diff.DBDiffClient;
@@ -42,12 +43,13 @@ public class AutomationCoordinator
   {
     List<TestSuite> testSuites = TestSuiteFactory.getInstance().getAllTestSuites();
     testSuites.forEach(testSuite -> runTestSuite(testSuite));
+    logger.logAllTestSuitsFinish();
   }
 
   private void runTestSuite(TestSuite testSuite)
   {
     runSelectedTestCasesInSuite(testSuite, testSuite.getTestDataForAllTestCases(), true);
-    runSelectedTestCasesInSuite(testSuite, testSuite.getFailedTestDataForRetry(), false);
+    runSelectedTestCasesInSuite(testSuite, new ArrayList<>(testSuite.getFailedTestDataForRetry()), false);
   }
 
   private void runSelectedTestCasesInSuite(TestSuite testSuite, List<TestData> testDataList, boolean isFirstAttempt)
@@ -70,7 +72,10 @@ public class AutomationCoordinator
     }
     else
     {
-      testSuite.addFailedTestCaseForRetry(testData);
+      if (isFirstAttempt)
+      {
+        testSuite.addFailedTestCaseForRetry(testData);
+      }
     }
   }
 
@@ -88,7 +93,7 @@ public class AutomationCoordinator
       testResult = TestResult.FAILURE;
       logger.logException(e);
     }
-    logger.logTestCaseFinish(testRunner, testData, testResult, isFirstAttempt);
+    logger.logTestCaseFinish(testRunner, testData, testSuiteName, testResult, isFirstAttempt);
     return testResult;
   }
 

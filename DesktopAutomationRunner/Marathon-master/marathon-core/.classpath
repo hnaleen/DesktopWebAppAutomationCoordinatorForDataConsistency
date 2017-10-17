@@ -2,10 +2,24 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/marathon-runtime"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/marathon-runtime-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/marathon-support"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/marathon-runtime-server"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/marathon-rsta-editor"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/aopalliance.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/BrowserLauncher2-all-1_3.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/forms-1.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/guice-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/javax.inject.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/jline-0.9.93.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/jruby-complete-1.7.11.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/JRubyParser.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/jython-standalone-2.5.3.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/looks-2.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/marathon-rt-ruby.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/opencsv-2.2.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/osxutil.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/rsyntaxtextarea.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/snakeyaml-1.7.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/snakeyaml-1.11.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/vldocking-3.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/CosmicAutomation/AutomationSuite/Automation_Bin/bin/AutomationCoordinator_lib/lib/yydebug.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

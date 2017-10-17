@@ -21,8 +21,7 @@ public class Phase2TestSuite extends TestSuite
   @Override
   public String getCosmicAutomationTestSuiteScript()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return "nova_Phase_02";
   }
 
   @Override
