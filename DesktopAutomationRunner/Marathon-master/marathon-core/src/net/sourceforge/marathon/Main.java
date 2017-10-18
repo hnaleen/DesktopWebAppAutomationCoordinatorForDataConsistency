@@ -45,10 +45,12 @@ import com.google.inject.Module;
 
 import junit.framework.TestFailure;
 import junit.framework.TestResult;
+import net.sourceforge.marathon.api.Failure;
 import net.sourceforge.marathon.api.RuntimeLogger;
 import net.sourceforge.marathon.display.DisplayWindow;
 import net.sourceforge.marathon.display.SplashScreen;
 import net.sourceforge.marathon.editor.IEditorProvider;
+import net.sourceforge.marathon.junit.MarathonAssertion;
 import net.sourceforge.marathon.junit.textui.TestRunner;
 import net.sourceforge.marathon.mpf.MPFSelection;
 import net.sourceforge.marathon.runtime.NullLogger;
@@ -226,9 +228,21 @@ public class Main {
     return wasSuccessful;
   }
   
-  private boolean isCosmicAFTFailure(TestFailure failure)
+  private boolean isCosmicAFTFailure(TestFailure testFailure)
   {
-    return AFT_TEST_FAIL_MSG.equalsIgnoreCase(failure.exceptionMessage());
+//  return AFT_TEST_FAIL_MSG.equalsIgnoreCase(testFailure.exceptionMessage());
+    boolean isCosmicAFTFailure = false;
+    MarathonAssertion marathonAssertion = (net.sourceforge.marathon.junit.MarathonAssertion) testFailure.thrownException();
+    Failure[] failures = marathonAssertion.getFailures();
+    for (Failure failure : failures)
+    {
+      if (AFT_TEST_FAIL_MSG.equalsIgnoreCase(failure.getMessage()))
+      {
+        isCosmicAFTFailure = true;
+        break;
+      }
+    }
+    return isCosmicAFTFailure;
   }
 
     /**
