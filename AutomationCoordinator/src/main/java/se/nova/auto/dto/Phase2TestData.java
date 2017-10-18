@@ -20,11 +20,13 @@ public class Phase2TestData implements TestData
   String templateName;
 
   String templateType;
+  
+  String recipe;
 
   PGD pgd;
 
   Drug drug;
-
+  
   String testCaseStatus = "NOT RUN";
 
   public Phase2TestData()
@@ -134,6 +136,16 @@ public class Phase2TestData implements TestData
   {
     return userName;
   }
+  
+  public void setRecipe(String recipe)
+  {
+    this.recipe = recipe;
+  }
+  
+  public String getRecipe()
+  {
+    return recipe;
+  }
 
   @Override
   public Properties toProperties()
@@ -147,6 +159,7 @@ public class Phase2TestData implements TestData
     properties.setProperty("templateName", templateName);
     properties.setProperty("templateType", templateType);
     properties.setProperty("testCaseStatus", testCaseStatus);
+    properties.setProperty("recipe", recipe);
     if (pgd != null)
     {
       pgd.toProperties(properties);

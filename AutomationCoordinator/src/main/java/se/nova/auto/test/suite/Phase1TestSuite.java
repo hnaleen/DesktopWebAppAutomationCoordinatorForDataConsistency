@@ -24,12 +24,6 @@ public class Phase1TestSuite extends TestSuite
   }
   
   @Override
-  public String getNovaAFTBootstrapScript()
-  {
-    return null;
-  }
-
-  @Override
   public String getCosmicAutomationTestSuiteScript()
   {
     return "nova_Phase_01";
@@ -38,6 +32,13 @@ public class Phase1TestSuite extends TestSuite
   @Override
   public String getNovaAutomationTestSuiteScript()
   {
-    return null;
+    return "cps01";
   }
+  
+  @Override
+  public String getNovaAFTBootstrapScript()
+  {
+    return "target/cambio-stella-physician-standard/ConfigSuites.js";
+  }
+
 }
