@@ -17,6 +17,8 @@ public class ArgumentProcessor
   private String testResultDir;
 
   private String novaUrl;
+
+  private String dummyMode;
   
   public static ArgumentProcessor getInstance()
   {
@@ -36,7 +38,9 @@ public class ArgumentProcessor
     diffUrl = getValueByKey("-diffUrl=", args);
     testResultDir = getValueByKey("-testResultDir=", args);
     novaUrl = getValueByKey("-novaUrl", args);
+    dummyMode = getValueByKey("-dummy", args);
   }
+
 
   private String getValueByKey(String key, String args[])
   {
@@ -67,7 +71,7 @@ public class ArgumentProcessor
     return novaTestRunnerUrl;
   }
 
-  public boolean runInLocalMode()
+  public boolean isRunningInLocalMode()
   {
     return local.equalsIgnoreCase("true");
   }
@@ -85,5 +89,15 @@ public class ArgumentProcessor
   public String getNovaUrl()
   {
     return novaUrl;
+  }
+  
+  public boolean isRunningInDummyMode()
+  {
+    return dummyMode != null;
+  }
+  
+  public boolean isRunningInDummyMode(String name)
+  {
+    return isRunningInDummyMode() && dummyMode.equalsIgnoreCase(name);
   }
 }

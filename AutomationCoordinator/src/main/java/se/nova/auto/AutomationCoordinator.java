@@ -6,9 +6,8 @@ import java.util.List;
 import se.nova.auto.diff.DBDiffClient;
 import se.nova.auto.dto.TestData;
 import se.nova.auto.dto.TestResult;
-import se.nova.auto.test.runner.CosmicTestRunner;
-import se.nova.auto.test.runner.NovaTestRunner;
 import se.nova.auto.test.runner.TestRunner;
+import se.nova.auto.test.runner.TestRunnerFactory;
 import se.nova.auto.test.suite.TestSuite;
 import se.nova.auto.test.suite.TestSuiteFactory;
 import se.nova.auto.util.ArgumentProcessor;
@@ -16,10 +15,6 @@ import se.nova.auto.util.TestStatusLogger;
 
 public class AutomationCoordinator
 {
-  private TestRunner cosmicTestRunner;
-
-  private TestRunner novaTestRunner;
-
   private TestStatusLogger logger;
 
   private DBDiffClient diffCalculator;
@@ -27,8 +22,6 @@ public class AutomationCoordinator
   public AutomationCoordinator(String[] args)
   {
     ArgumentProcessor.getInstance().init(args);
-    cosmicTestRunner = new CosmicTestRunner();
-    novaTestRunner = new NovaTestRunner();
     logger = new TestStatusLogger();
     diffCalculator = new DBDiffClient();
   }
@@ -61,11 +54,13 @@ public class AutomationCoordinator
 
   private void runTestCaseInBothClients(TestSuite testSuite, TestData testData, boolean isFirstAttempt)
   {
-    if (runTestCase(cosmicTestRunner, testData, testSuite.getName(), testSuite.getCosmicAFTBootstrapScript(),
-        testSuite.getCosmicAutomationTestSuiteScript(), isFirstAttempt).isSuccessful())
+    if (runTestCase(TestRunnerFactory.getInstance().getTestRunner("Cosmic"), testData, testSuite.getName(),
+        testSuite.getCosmicAFTBootstrapScript(), testSuite.getCosmicAutomationTestSuiteScript(), isFirstAttempt)
+            .isSuccessful())
     {
-      if (runTestCase(novaTestRunner, testData, testSuite.getName(), testSuite.getNovaAFTBootstrapScript(),
-          testSuite.getNovaAutomationTestSuiteScript(), isFirstAttempt).isSuccessful())
+      if (runTestCase(TestRunnerFactory.getInstance().getTestRunner("Nova"), testData, testSuite.getName(),
+          testSuite.getNovaAFTBootstrapScript(), testSuite.getNovaAutomationTestSuiteScript(), isFirstAttempt)
+              .isSuccessful())
       {
         calculateDiffAndGenerateReport(testData);
       }
@@ -99,7 +94,8 @@ public class AutomationCoordinator
 
   private void calculateDiffAndGenerateReport(TestData testData)
   {
-    if (ArgumentProcessor.getInstance().runInLocalMode())
+    if (ArgumentProcessor.getInstance().isRunningInLocalMode()
+        && !ArgumentProcessor.getInstance().isRunningInDummyMode())
     {
       logger.logDiffStart(testData);
       String diffInJson = diffCalculator.calculateDiffForUser(testData.getUserId());

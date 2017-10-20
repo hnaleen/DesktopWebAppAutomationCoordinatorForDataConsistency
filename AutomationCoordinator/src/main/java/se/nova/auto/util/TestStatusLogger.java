@@ -122,7 +122,7 @@ public class TestStatusLogger
       {
         logger.error("Execution of Test Case ID :" + testData.getTestCaseId() + " will be skipped in Nova");
       }
-      if (argumentProcessor.runInLocalMode())
+      if (argumentProcessor.isRunningInLocalMode())
       {
         logger.error("Diff Calculation for Test Case ID :" + testData.getTestCaseId() + " will be skipped\n");
       }
