@@ -4,3 +4,5 @@ AutomationCoordinator/.classpath
 AutomationCoordinator/.project
 AutomationCoordinator/.settings/org.eclipse.jdt.core.prefs
 AutomationCoordinator/.settings/org.eclipse.m2e.core.prefs
+WebAutomationRunner/ProtractorRunner/node_modules/.bin/cake
+*.rar
